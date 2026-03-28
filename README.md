@@ -1,12 +1,18 @@
-# Turing Machine
+# turing_machine
 
-Universal Turing Machine simulator.
+Turing machine simulator — define states, transitions, tape
 
 ## Usage
 
 ```bash
-python3 turing_machine.py
+python3 turing_machine.py --help
 ```
+
+## Features
+
+- Single file, zero dependencies
+- Python 3.8+ compatible
+- CLI interface
 
 ## License
 
