@@ -1,7 +1,7 @@
 # turing-machine
-Turing machine simulator with step-by-step visualization. Zero dependencies.
+Turing machine simulator. Zero dependencies.
 ## Usage
-```
-python3 turing_machine.py demo
-python3 turing_machine.py run spec.json --verbose
+```bash
+python3 turing_machine.py --example binary_inc
+python3 turing_machine.py program.json --trace
 ```
