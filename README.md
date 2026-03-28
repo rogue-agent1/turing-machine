@@ -1,7 +1,11 @@
 # turing-machine
-Turing machine simulator. Zero dependencies.
+
+Universal Turing machine simulator
+
 ## Usage
+
 ```bash
-python3 turing_machine.py --example binary_inc
-python3 turing_machine.py program.json --trace
+python3 turing_machine.py --help
 ```
+
+Zero dependencies. Python 3.8+.
