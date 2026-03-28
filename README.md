@@ -1,11 +1,13 @@
-# turing-machine
+# Turing Machine
 
-Universal Turing machine simulator
+Universal Turing Machine simulator.
 
 ## Usage
 
 ```bash
-python3 turing_machine.py --help
+python3 turing_machine.py
 ```
 
-Zero dependencies. Python 3.8+.
+## License
+
+MIT

@@ -1,38 +1,32 @@
 #!/usr/bin/env python3
-"""turing_machine - Universal Turing machine simulator."""
-import argparse, json, sys
-
-def run_tm(tape_str, rules, start, accept, reject, max_steps=10000):
-    tape = dict(enumerate(tape_str))
-    head = 0; state = start; steps = 0
-    while steps < max_steps:
-        sym = tape.get(head, "_")
-        key = f"{state},{sym}"
-        if state in (accept, reject): break
-        if key not in rules:
-            print(f"No rule for ({state}, {sym}), halting"); break
-        new_sym, direction, new_state = rules[key]
-        tape[head] = new_sym
-        head += 1 if direction == "R" else -1
-        state = new_state; steps += 1
-        if steps <= 50:
-            lo, hi = min(tape.keys()), max(tape.keys())
-            t = "".join(tape.get(i,"_") for i in range(lo, hi+1))
-            ptr = head - lo
-            print(f"  [{state:>8}] {t[:ptr]}[{tape.get(head,'_')}]{t[ptr+1:]}")
-    result = "ACCEPT" if state == accept else "REJECT" if state == reject else "HALT"
-    lo, hi = min(tape.keys()), max(tape.keys())
-    final = "".join(tape.get(i,"_") for i in range(lo, hi+1)).strip("_")
-    print(f"\nResult: {result} after {steps} steps")
-    print(f"Tape: {final}")
-
-def main():
-    p = argparse.ArgumentParser(description="Turing machine simulator")
-    p.add_argument("program", help="JSON file with TM definition")
-    p.add_argument("input", help="Input string")
-    p.add_argument("-m","--max-steps",type=int,default=10000)
-    a = p.parse_args()
-    with open(a.program) as f: tm = json.load(f)
-    run_tm(a.input, tm["rules"], tm.get("start","q0"), tm.get("accept","qa"), tm.get("reject","qr"), a.max_steps)
-
-if __name__ == "__main__": main()
+"""Universal Turing Machine simulator."""
+class TM:
+    def __init__(self,states,alphabet,blank,transitions,start,accept,reject):
+        self.states=states; self.alpha=alphabet; self.blank=blank
+        self.trans=transitions; self.start=start; self.accept=accept; self.reject=reject
+    def run(self,input_str,max_steps=10000):
+        tape=dict(enumerate(input_str)); head=0; state=self.start; steps=0
+        while steps<max_steps:
+            sym=tape.get(head,self.blank)
+            if state==self.accept: return True,self._tape_str(tape),steps
+            if state==self.reject: return False,self._tape_str(tape),steps
+            key=(state,sym)
+            if key not in self.trans: return False,self._tape_str(tape),steps
+            new_state,write_sym,direction=self.trans[key]
+            tape[head]=write_sym; state=new_state
+            head+=1 if direction=="R" else -1; steps+=1
+        return None,self._tape_str(tape),steps
+    def _tape_str(self,tape):
+        if not tape: return ""
+        lo,hi=min(tape),max(tape)
+        return "".join(tape.get(i,self.blank) for i in range(lo,hi+1)).strip(self.blank)
+if __name__=="__main__":
+    # Binary increment
+    trans={("q0","0"):("q0","0","R"),("q0","1"):("q0","1","R"),("q0","_"):("carry","_","L"),
+        ("carry","0"):("done","1","L"),("carry","1"):("carry","0","L"),("carry","_"):("done","1","L")}
+    tm=TM(["q0","carry","done"],["0","1"],"_",trans,"q0","done","reject")
+    for inp,exp in [("101","110"),("111","1000"),("0","1")]:
+        ok,tape,steps=tm.run(inp)
+        assert tape==exp,f"FAIL: {inp}+1={tape}"
+        print(f"{inp} + 1 = {tape} ({steps} steps)")
+    print("Turing Machine OK")
